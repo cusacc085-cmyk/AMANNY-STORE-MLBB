@@ -51,31 +51,27 @@ export default function Servers() {
       <div className="absolute inset-0 bg-black/70" />
 
       <div className="relative z-10 max-w-7xl mx-auto p-6">
-
         <h1 className="text-5xl font-bold text-center text-cyan-400 mb-12">
           SELECT SERVER
         </h1>
 
         <div className="grid md:grid-cols-3 gap-6">
-
           {servers.map((server, index) => (
             <Link
               key={index}
               href={server.link}
-              className={`bg-gray-900/70 backdrop-blur-md p-8 rounded-3xl border ${server.color} hover:scale-105 transition duration-300`}
+              className={`server-card bg-gray-900/70 backdrop-blur-md p-8 rounded-3xl border ${server.color}`}
             >
               <h2 className="text-2xl font-bold text-center">
                 {server.name}
               </h2>
 
-              <button className="w-full mt-6 bg-cyan-500 hover:bg-cyan-600 py-3 rounded-xl font-bold">
+              <button className="w-full mt-6 bg-cyan-500 hover:bg-cyan-600 transition py-3 rounded-xl font-bold">
                 Open
               </button>
             </Link>
           ))}
-
         </div>
-
       </div>
     </main>
   );
