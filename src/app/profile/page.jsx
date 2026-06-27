@@ -1,31 +1,97 @@
-import { cookies } from "next/headers";
+"use client";
 
-export default async function ProfilePage() {
-  const cookieStore =
-    await cookies();
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
-  const email =
-    cookieStore.get("user")?.value;
+export default function Profile() {
+  const router = useRouter();
+
+  const [user, setUser] =
+    useState(null);
+
+  useEffect(() => {
+    const data = JSON.parse(
+      localStorage.getItem("user")
+    );
+
+    if (!data) {
+      router.push("/login");
+      return;
+    }
+
+    setUser(data);
+  }, []);
+
+  const logout = () => {
+    localStorage.removeItem("loggedIn");
+
+    router.push("/login");
+  };
+
+  if (!user) return null;
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[#030712]">
+    <main
+      className="min-h-screen bg-cover bg-center flex items-center justify-center"
+      style={{
+        backgroundImage:
+          "url('/profile-bg.jpg')",
+      }}
+    >
+      <div className="absolute inset-0 bg-black/70"></div>
 
-      <div className="bg-[#08111f] border border-cyan-500/20 rounded-3xl p-10">
+      <div className="relative z-10 w-full max-w-md bg-black/60 backdrop-blur-md border border-cyan-500 rounded-3xl p-8 text-white">
 
-        <h1 className="text-4xl font-black text-cyan-400">
-          My Account
-        </h1>
+        <div className="text-center">
 
-        <p className="mt-6 text-gray-400">
-          Logged in as
-        </p>
+          <img
+            src="/avatar.png"
+            alt="Profile"
+            className="w-28 h-28 rounded-full mx-auto border-4 border-cyan-500"
+          />
 
-        <p className="text-xl font-bold mt-2">
-          {email}
-        </p>
+          <h1 className="text-3xl font-bold mt-4">
+            {user.username}
+          </h1>
+
+          <p className="text-gray-400">
+            {user.email}
+          </p>
+
+        </div>
+
+        <div className="mt-8 space-y-4">
+
+          <div className="bg-gray-900 p-4 rounded-xl">
+            <p className="text-gray-400">
+              Username
+            </p>
+
+            <p className="font-bold">
+              {user.username}
+            </p>
+          </div>
+
+          <div className="bg-gray-900 p-4 rounded-xl">
+            <p className="text-gray-400">
+              Email
+            </p>
+
+            <p className="font-bold">
+              {user.email}
+            </p>
+          </div>
+
+        </div>
+
+        <button
+          onClick={logout}
+          className="w-full mt-6 bg-red-500 hover:bg-red-600 py-3 rounded-xl font-bold"
+        >
+          Logout
+        </button>
 
       </div>
-
     </main>
   );
 }
