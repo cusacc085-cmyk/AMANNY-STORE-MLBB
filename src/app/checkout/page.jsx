@@ -1,32 +1,43 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 export default function Checkout() {
-  const search = useSearchParams();
+  const searchParams = useSearchParams();
 
-  const product =
-    search.get("diamond") || "";
+  const packageName =
+    searchParams.get("package") || "Not Selected";
 
   const price =
-    search.get("price") || "";
+    searchParams.get("price") || "₹0";
+
+  const [userId, setUserId] =
+    useState("");
+
+  const [serverId, setServerId] =
+    useState("");
+
+  const [loading, setLoading] =
+    useState(false);
 
   const sendOrder = () => {
-    const gameId =
-      document.getElementById("gameId").value;
+    if (!userId || !serverId) {
+      alert("Please fill User ID & Server ID");
+      return;
+    }
 
-    const serverId =
-      document.getElementById("serverId").value;
+    setLoading(true);
 
     const message = `🔥 AMANNY'S STORE 🔥
 
 MLBB Recharge Order
 
-🎮 User ID: ${gameId}
+🎮 User ID: ${userId}
 
 🖥️ Server ID: ${serverId}
 
-💎 Package: ${product}
+💎 Package: ${packageName}
 
 💰 Amount: ${price}
 
@@ -35,77 +46,98 @@ Payment Completed ✅
 Please check my order.`;
 
     window.open(
-      `https://wa.me/917629970920?text=${encodeURIComponent(message)}`,
+      `https://wa.me/917629970920?text=${encodeURIComponent(
+        message
+      )}`,
       "_blank"
     );
+
+    setLoading(false);
   };
 
   return (
-    <main className="p-6 max-w-xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">
-        Checkout
-      </h1>
+    <main
+      className="min-h-screen flex items-center justify-center px-4 bg-cover bg-center"
+      style={{
+        backgroundImage:
+          "url('/checkout-bg.jpg')",
+      }}
+    >
+      <div className="absolute inset-0 bg-black/70" />
 
-      <input
-        id="gameId"
-        placeholder="User ID"
-        className="w-full p-3 mb-4 text-black"
-      />
+      <div className="relative z-10 w-full max-w-lg bg-black/60 backdrop-blur-md border border-cyan-500 rounded-3xl p-8 text-white">
 
-      <input
-        id="serverId"
-        placeholder="Server ID"
-        className="w-full p-3 mb-4 text-black"
-      />
+        <h1 className="text-4xl font-bold text-center text-cyan-400">
+          Checkout
+        </h1>
 
-      <div className="mb-4">
-        Package: {product}
-      </div>
+        <p className="text-center text-gray-300 mt-2">
+          Complete Your Recharge
+        </p>
 
-      <div className="mb-4">
-        Amount: {price}
-      </div>
+        <input
+          type="number"
+          placeholder="MLBB User ID"
+          value={userId}
+          onChange={(e) =>
+            setUserId(e.target.value)
+          }
+          className="w-full mt-6 p-3 rounded-xl bg-gray-900 border border-gray-700 outline-none"
+        />
 
-      <button
-        onClick={sendOrder}
-        className="bg-green-500 px-6 py-3 rounded"
-      >
-        Order via WhatsApp
-      </button>
-    </main>
-  );
-}
-          {server.packages.map(
-            (item, index) => (
-              <Link
-                key={index}
-                href={`/checkout?server=${server.slug}&product=${encodeURIComponent(
-                  item.product
-                )}&price=${encodeURIComponent(
-                  item.price
-                )}`}
-                className="glow-card rounded-2xl p-5"
-              >
-                <h3 className="text-xl font-bold">
-                  {item.product}
-                </h3>
+        <input
+          type="number"
+          placeholder="Server ID"
+          value={serverId}
+          onChange={(e) =>
+            setServerId(e.target.value)
+          }
+          className="w-full mt-4 p-3 rounded-xl bg-gray-900 border border-gray-700 outline-none"
+        />
 
-                <p className="text-cyan-400 text-2xl mt-3">
-                  {item.price}
-                </p>
+        <div className="mt-6 bg-gray-900 p-4 rounded-xl border border-gray-700">
 
-                <button className="w-full mt-5 bg-cyan-500 text-black py-3 rounded-xl font-bold">
-                  Buy Now
-                </button>
+          <div className="flex justify-between">
+            <span>Package</span>
+            <span>{packageName}</span>
+          </div>
 
-              </Link>
-            )
-          )}
+          <div className="flex justify-between mt-3">
+            <span>Amount</span>
+            <span className="text-green-400 font-bold">
+              {price}
+            </span>
+          </div>
 
         </div>
 
-      </div>
+        <div className="mt-6 bg-cyan-950 border border-cyan-500 p-4 rounded-xl">
 
+          <h3 className="font-bold text-cyan-400">
+            Payment Number
+          </h3>
+
+          <p className="text-2xl font-bold mt-2">
+            7629970920
+          </p>
+
+          <p className="text-sm text-gray-300 mt-2">
+            Complete payment before placing order.
+          </p>
+
+        </div>
+
+        <button
+          onClick={sendOrder}
+          disabled={loading}
+          className="w-full mt-6 bg-green-500 hover:bg-green-600 py-3 rounded-xl font-bold"
+        >
+          {loading
+            ? "Processing..."
+            : "Order on WhatsApp"}
+        </button>
+
+      </div>
     </main>
   );
 }
