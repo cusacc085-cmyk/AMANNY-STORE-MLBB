@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function Checkout() {
   const searchParams = useSearchParams();
@@ -22,6 +23,9 @@ export default function Checkout() {
   const [screenshot, setScreenshot] =
     useState(null);
 
+  const [preview, setPreview] =
+    useState("");
+
   const sendOrder = () => {
     if (!userId || !serverId) {
       alert("Fill User ID & Server ID");
@@ -39,29 +43,43 @@ export default function Checkout() {
     }
 
     if (!paid) {
-      alert("Verify Payment First");
+      alert("Confirm Payment First");
       return;
     }
+
+    const orders =
+      JSON.parse(
+        localStorage.getItem("orders")
+      ) || [];
+
+    orders.push({
+      userId,
+      serverId,
+      packageName,
+      price,
+      transactionId,
+      screenshot: preview,
+      date: new Date().toLocaleString(),
+    });
+
+    localStorage.setItem(
+      "orders",
+      JSON.stringify(orders)
+    );
 
     const message = `🔥 AMANNY'S STORE 🔥
 
 MLBB Recharge Order
 
 🎮 User ID: ${userId}
-
 🖥️ Server ID: ${serverId}
-
 💎 Package: ${packageName}
-
 💰 Amount: ${price}
-
 🧾 Transaction ID: ${transactionId}
 
-Payment Completed ✅
+✅ Payment Completed
 
-Please check my order.
-
-(Payment Screenshot Sent Separately)`;
+Please verify my order.`;
 
     window.open(
       `https://wa.me/917629970920?text=${encodeURIComponent(
@@ -73,7 +91,7 @@ Please check my order.
 
   return (
     <main
-      className="min-h-screen flex items-center justify-center px-4 bg-cover bg-center"
+      className="relative min-h-screen flex items-center justify-center px-4 bg-cover bg-center"
       style={{
         backgroundImage:
           "url('/checkout-bg.jpg')",
@@ -81,15 +99,11 @@ Please check my order.
     >
       <div className="absolute inset-0 bg-black/70"></div>
 
-      <div className="relative z-10 w-full max-w-xl bg-black/60 backdrop-blur-md border border-cyan-500 rounded-3xl p-8 text-white">
+      <div className="relative z-10 w-full max-w-xl bg-black/70 backdrop-blur-md border border-cyan-500 rounded-3xl p-8 text-white">
 
         <h1 className="text-4xl font-bold text-center text-cyan-400">
           Checkout
         </h1>
-
-        <p className="text-center text-gray-300 mt-2">
-          Complete Your Recharge
-        </p>
 
         <input
           type="number"
@@ -118,7 +132,7 @@ Please check my order.
             <span>{packageName}</span>
           </div>
 
-          <div className="flex justify-between mt-3">
+          <div className="flex justify-between mt-2">
             <span>Amount</span>
             <span className="text-green-400 font-bold">
               {price}
@@ -127,40 +141,26 @@ Please check my order.
 
         </div>
 
-        <div className="mt-6 bg-gradient-to-br from-cyan-950 to-gray-900 p-6 rounded-2xl border border-cyan-500">
+        <div className="mt-6 bg-gray-900 border border-cyan-500 rounded-2xl p-5">
 
-          <h3 className="text-2xl font-bold text-cyan-400 text-center">
-            💳 Payment Details
-          </h3>
+          <h2 className="text-2xl font-bold text-center text-cyan-400">
+            Payment Details
+          </h2>
 
-          <div className="mt-4 bg-black/40 p-4 rounded-xl">
+          <p className="mt-4 text-center">
+            GPay / Paytm
+          </p>
 
-            <p className="text-gray-400">
-              Google Pay
-            </p>
+          <p className="text-center text-green-400 text-xl font-bold">
+            7629970920
+          </p>
 
-            <p className="text-green-400 font-bold text-xl">
-              7629970920
-            </p>
-
-          </div>
-
-          <div className="mt-4 bg-black/40 p-4 rounded-xl">
-
-            <p className="text-gray-400">
-              Paytm
-            </p>
-
-            <p className="text-green-400 font-bold text-xl">
-              7629970920
-            </p>
-
-          </div>
-
-          <img
+          <Image
             src="/payment-qr.png"
-            alt="Payment QR"
-            className="w-56 mx-auto mt-6 rounded-2xl border border-cyan-500"
+            alt="QR"
+            width={220}
+            height={220}
+            className="mx-auto mt-5 rounded-xl"
           />
 
           <button
@@ -170,9 +170,9 @@ Please check my order.
               );
               alert("Number Copied");
             }}
-            className="w-full mt-4 bg-cyan-500 hover:bg-cyan-600 py-3 rounded-xl font-bold"
+            className="w-full mt-4 bg-cyan-500 py-3 rounded-xl font-bold"
           >
-            Copy Payment Number
+            Copy Number
           </button>
 
         </div>
@@ -182,33 +182,50 @@ Please check my order.
           placeholder="Transaction ID"
           value={transactionId}
           onChange={(e) =>
-            setTransactionId(e.target.value)
+            setTransactionId(
+              e.target.value
+            )
           }
           className="w-full mt-6 p-3 rounded-xl bg-gray-900 border border-gray-700"
         />
 
         <div className="mt-4">
 
-          <label className="block mb-2">
+          <label>
             Upload Payment Screenshot
           </label>
 
           <input
             type="file"
             accept="image/*"
-            onChange={(e) =>
-              setScreenshot(
-                e.target.files[0]
-              )
-            }
-            className="w-full p-3 rounded-xl bg-gray-900 border border-gray-700"
+            onChange={(e) => {
+              const file =
+                e.target.files?.[0];
+
+              if (file) {
+                setScreenshot(file);
+
+                setPreview(
+                  URL.createObjectURL(file)
+                );
+              }
+            }}
+            className="w-full mt-2 p-3 rounded-xl bg-gray-900 border border-gray-700"
           />
 
         </div>
 
-        <div className="mt-5 bg-yellow-500/10 border border-yellow-500 rounded-xl p-4">
+        {preview && (
+          <img
+            src={preview}
+            alt="Preview"
+            className="w-full mt-4 rounded-xl border border-cyan-500"
+          />
+        )}
 
-          <label className="flex items-center gap-3">
+        <div className="mt-5 border border-yellow-500 p-4 rounded-xl">
+
+          <label className="flex gap-3 items-center">
 
             <input
               type="checkbox"
@@ -218,11 +235,10 @@ Please check my order.
                   e.target.checked
                 )
               }
-              className="w-5 h-5"
             />
 
             <span>
-              I have completed the payment
+              I have completed payment
             </span>
 
           </label>
@@ -232,10 +248,10 @@ Please check my order.
         <button
           onClick={sendOrder}
           disabled={!paid}
-          className={`w-full mt-6 py-4 rounded-xl font-bold text-lg ${
+          className={`w-full mt-6 py-4 rounded-xl font-bold ${
             paid
-              ? "bg-green-500 hover:bg-green-600"
-              : "bg-gray-600 cursor-not-allowed"
+              ? "bg-green-500"
+              : "bg-gray-600"
           }`}
         >
           Send Order To WhatsApp ✅
