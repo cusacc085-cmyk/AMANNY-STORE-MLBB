@@ -1,40 +1,16 @@
 @import "tailwindcss";
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
+  margin: 0;
   background: #030712;
   color: white;
+  font-family: sans-serif;
 }
 
-.glow-card {
-  background: #08111f;
-  border: 1px solid rgba(0, 229, 255, 0.15);
-  transition: 0.3s;
-}
-
-.glow-card:hover {
-  border-color: #00e5ff;
-  transform: translateY(-5px);
-  box-shadow: 0 0 25px rgba(0, 229, 255, 0.2);
-}
-
-.glow-btn {
-  background: #00e5ff;
-  color: black;
-  font-weight: bold;
-  transition: 0.3s;
-}
-
-.glow-btn:hover {
-  box-shadow: 0 0 25px #00e5ff;
-}
-
-.server-card {
-  background: #08111f;
-  border: 1px solid rgba(0,229,255,.15);
+a {
+  text-decoration: none;
+  color: inherit;
+}  border: 1px solid rgba(0,229,255,.15);
   transition: .3s;
 }
 
