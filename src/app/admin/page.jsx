@@ -1,99 +1,77 @@
-import Order from "@/models/Order";
-import { connectDB } from "@/lib/mongodb";
+"use client";
 
-export default async function AdminPage() {
+import { useEffect, useState } from "react";
 
-  await connectDB();
+export default function AdminPage() {
+  const [orders, setOrders] =
+    useState([]);
 
-  const orders =
-    await Order.find()
-      .sort({
-        createdAt: -1,
-      });
+  useEffect(() => {
+    const savedOrders =
+      JSON.parse(
+        localStorage.getItem("orders")
+      ) || [];
+
+    setOrders(savedOrders);
+  }, []);
 
   return (
-    <main className="min-h-screen bg-[#030712] text-white">
+    <main className="min-h-screen bg-black text-white p-6">
 
-      <div className="max-w-7xl mx-auto px-6 py-16">
+      <h1 className="text-4xl font-bold text-cyan-400 text-center mb-8">
+        Admin Orders
+      </h1>
 
-        <h1 className="text-5xl font-black">
-          Admin Orders
-        </h1>
+      {orders.length === 0 ? (
+        <p className="text-center">
+          No Orders Found
+        </p>
+      ) : (
+        <div className="grid gap-5">
 
-        <div className="overflow-auto mt-10">
+          {orders.map((order, index) => (
+            <div
+              key={index}
+              className="bg-gray-900 border border-cyan-500 rounded-2xl p-5"
+            >
+              <h2 className="text-xl font-bold">
+                Order #{index + 1}
+              </h2>
 
-          <table className="w-full">
+              <p className="mt-2">
+                🎮 User ID:
+                {order.userId}
+              </p>
 
-            <thead>
+              <p>
+                🖥️ Server ID:
+                {order.serverId}
+              </p>
 
-              <tr>
+              <p>
+                💎 Package:
+                {order.packageName}
+              </p>
 
-                <th>Email</th>
+              <p>
+                💰 Amount:
+                {order.price}
+              </p>
 
-                <th>Package</th>
+              <p>
+                🧾 Transaction ID:
+                {order.transactionId}
+              </p>
 
-                <th>Price</th>
+              <p className="text-green-400 mt-2">
+                Payment Completed ✅
+              </p>
 
-                <th>Payment</th>
-
-                <th>Recharge</th>
-
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              {orders.map(
-                (order) => (
-
-                  <tr
-                    key={
-                      order._id
-                    }
-                  >
-
-                    <td>
-                      {
-                        order.userEmail
-                      }
-                    </td>
-
-                    <td>
-                      {
-                        order.packageName
-                      }
-                    </td>
-
-                    <td>
-                      {
-                        order.amount
-                      }
-                    </td>
-
-                    <td>
-                      {
-                        order.paymentStatus
-                      }
-                    </td>
-
-                    <td>
-                      {
-                        order.rechargeStatus
-                      }
-                    </td>
-
-                  </tr>
-                )
-              )}
-
-            </tbody>
-
-          </table>
+            </div>
+          ))}
 
         </div>
-
-      </div>
+      )}
 
     </main>
   );
