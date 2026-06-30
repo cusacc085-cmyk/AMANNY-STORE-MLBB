@@ -1,6 +1,6 @@
 "use client";
 
-import { Packages } from "@/data/Packages";
+import { servers } from "@/data/packages";
 
 export default function PackagesPage() {
   return (
